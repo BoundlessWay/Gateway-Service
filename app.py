@@ -1,23 +1,32 @@
 from flask import Flask, request, jsonify
 import requests
+from flasgger import Swagger, swag_from
+from services.user_service import get_user_data
+from services.event_service import get_event_data
 
 app = Flask(__name__)
+swagger = Swagger(app)
 
-# Route chính cho gateway
-@app.route('/gatway', methods=['POST'])
+@app.route('/gateway', methods=['POST'])
+@swag_from('swagger/gateway_swagger.yml')
 def gateway():
     data = request.json
-    print(data)
     if not data:
         return jsonify({'error': 'Invalid data'}), 400
 
-    # Chuyển tiếp yêu cầu đến một dịch vụ khác
     try:
-        response = requests.post('http://localhost:8081/user', json=data)
-        print(response)
-        return jsonify(response.json()), response.status_code
+        service_name = data.get('service')
+        if service_name == 'user':
+            response = get_user_data()
+        elif service_name == 'order':
+            response = get_event_data()
+        else:
+            return jsonify({'error': 'Unknown service'}), 400
+
+        return response
+
     except requests.exceptions.RequestException as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000)
