@@ -1,7 +1,18 @@
 from fastapi import FastAPI
 from routes import account, event, notification, payment, support, ticket
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI(docs_url="/")
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Bạn có thể chỉ định domain cụ thể thay vì "*"
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include routers from account and event modules
 app.include_router(account.router, prefix="/account", tags=["Account"])
