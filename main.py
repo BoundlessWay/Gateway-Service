@@ -8,7 +8,7 @@ app = FastAPI(docs_url="/")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Bạn có thể chỉ định domain cụ thể thay vì "*"
+    allow_origins=["https://manageventicket.netlify.app"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
